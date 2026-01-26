@@ -36,6 +36,21 @@ return {
         vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
       end
 
+      -- Configure diagnostic display
+      vim.diagnostic.config({
+        virtual_text = false,  -- Disable inline messages, use ,d to view
+        signs = true,
+        underline = true,
+        update_in_insert = false,
+        severity_sort = true,
+        float = {
+          border = "rounded",
+          source = "always",
+          header = "",
+          prefix = "",
+        },
+      })
+
       -- Use new vim.lsp.config API if available (Neovim 0.11+)
       if vim.lsp.config then
         -- Python
@@ -49,6 +64,10 @@ return {
                 typeCheckingMode = "basic",
                 autoSearchPaths = true,
                 useLibraryCodeForTypes = true,
+                diagnosticSeverityOverrides = {
+                  reportUnusedImport = "warning",
+                  reportUnusedVariable = "warning",
+                },
               },
             },
           },
@@ -87,6 +106,10 @@ return {
                 typeCheckingMode = "basic",
                 autoSearchPaths = true,
                 useLibraryCodeForTypes = true,
+                diagnosticSeverityOverrides = {
+                  reportUnusedImport = "warning",
+                  reportUnusedVariable = "warning",
+                },
               },
             },
           },
