@@ -71,6 +71,10 @@ return {
       vim.g.loaded_netrwPlugin = 1
 
       nvimtree.setup({
+        update_focused_file = {
+          enable = true,
+          update_root = false,
+        },
         view = {
           width = 35,
           relativenumber = true,
@@ -91,7 +95,7 @@ return {
         actions = {
           open_file = {
             window_picker = {
-              enable = false,
+              enable = true,
             },
           },
         },
@@ -131,6 +135,9 @@ return {
               ["<C-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
             },
           },
+          preview = {
+            treesitter = false,
+          },
         },
       })
 
@@ -143,6 +150,11 @@ return {
       keymap.set("n", "<leader>fs", "<cmd>Telescope live_grep<cr>", { desc = "Find string in cwd" })
       keymap.set("n", "<leader>fc", "<cmd>Telescope grep_string<cr>", { desc = "Find string under cursor" })
       keymap.set("n", "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "Find buffers" })
+
+      -- Search word under cursor (like starter config)
+      local builtin = require("telescope.builtin")
+      keymap.set("n", "<leader>sw", builtin.grep_string, { desc = "Search current word in project" })
+      keymap.set("n", "<leader><leader>", builtin.buffers, { desc = "Find existing buffers" })
     end,
   },
 
@@ -187,6 +199,11 @@ return {
     event = { "BufReadPre", "BufNewFile" },
     config = function()
       require("gitsigns").setup({
+        current_line_blame = true,
+        current_line_blame_opts = {
+          delay = 300,
+          virt_text_pos = 'eol',
+        },
         on_attach = function(bufnr)
           local gs = package.loaded.gitsigns
 

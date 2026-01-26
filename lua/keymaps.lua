@@ -7,6 +7,7 @@ keymap.set("n", "<leader>x", ":x<CR>", { desc = "Save and quit" })
 
 -- Clear search highlights
 keymap.set("n", "<leader>nh", ":nohl<CR>", { desc = "Clear search highlights" })
+keymap.set("n", "<Esc>", ":nohl<CR><Esc>", { desc = "Clear search highlights on ESC" })
 
 -- Window management
 keymap.set("n", "<leader>sv", "<C-w>v", { desc = "Split window vertically" })
@@ -25,6 +26,10 @@ keymap.set("n", "<C-Up>", ":resize +2<CR>", { desc = "Increase split height" })
 keymap.set("n", "<C-Down>", ":resize -2<CR>", { desc = "Decrease split height" })
 keymap.set("n", "<C-Left>", ":vertical resize -2<CR>", { desc = "Decrease split width" })
 keymap.set("n", "<C-Right>", ":vertical resize +2<CR>", { desc = "Increase split width" })
+
+-- Jump locations (Ctrl-O = back, Ctrl-I = forward)
+keymap.set("n", "<C-o>", "<C-o>", { noremap = true, desc = "Jump to older position" })
+keymap.set("n", "<C-i>", "<C-i>", { noremap = true, desc = "Jump to newer position" })
 
 -- Buffer navigation
 keymap.set("n", "<Tab>", ":bnext<CR>", { desc = "Next buffer" })
