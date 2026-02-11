@@ -6,6 +6,9 @@ return {
     "windwp/nvim-autopairs",
   },
   config = function()
+    -- Use HTML parser for htmldjango files
+    vim.treesitter.language.register("html", "htmldjango")
+
     local status_ok, treesitter = pcall(require, "nvim-treesitter.configs")
     if not status_ok then
       return
@@ -22,6 +25,7 @@ return {
       ensure_installed = {
         "python",
         "html",
+        "toml",
         "css",
         "javascript",
         "typescript",

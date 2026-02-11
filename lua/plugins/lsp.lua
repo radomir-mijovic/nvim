@@ -51,19 +51,48 @@ return {
         },
       })
 
+      -- Helper to get Python path from venv
+      local function get_python_path()
+        -- Check for VIRTUAL_ENV environment variable
+        local venv = os.getenv("VIRTUAL_ENV")
+        if venv then
+          return venv .. "/bin/python"
+        end
+
+        -- Check for common venv locations in workspace
+        local venv_paths = {
+          "venv/bin/python",
+          ".venv/bin/python",
+          "env/bin/python",
+          ".env/bin/python",
+        }
+
+        for _, path in ipairs(venv_paths) do
+          local full_path = vim.fn.getcwd() .. "/" .. path
+          if vim.fn.executable(full_path) == 1 then
+            return full_path
+          end
+        end
+
+        -- Fallback to system python
+        return vim.fn.exepath("python3") or vim.fn.exepath("python") or "python"
+      end
+
       -- Use new vim.lsp.config API if available (Neovim 0.11+)
       if vim.lsp.config then
         -- Python
         vim.lsp.config.pyright = {
           cmd = { "pyright-langserver", "--stdio" },
           filetypes = { "python" },
-          root_markers = { "pyproject.toml", "setup.py", "setup.cfg", "requirements.txt", "Pipfile", "pyrightconfig.json" },
+          root_markers = { "pyproject.toml", "setup.py", "setup.cfg", "requirements.txt", "Pipfile", "pyrightconfig.json", ".git" },
           settings = {
             python = {
+              pythonPath = get_python_path(),
               analysis = {
                 typeCheckingMode = "basic",
                 autoSearchPaths = true,
                 useLibraryCodeForTypes = true,
+                diagnosticMode = "workspace",
                 diagnosticSeverityOverrides = {
                   reportUnusedImport = "warning",
                   reportUnusedVariable = "warning",
@@ -102,10 +131,12 @@ return {
           on_attach = on_attach,
           settings = {
             python = {
+              pythonPath = get_python_path(),
               analysis = {
                 typeCheckingMode = "basic",
                 autoSearchPaths = true,
                 useLibraryCodeForTypes = true,
+                diagnosticMode = "workspace",
                 diagnosticSeverityOverrides = {
                   reportUnusedImport = "warning",
                   reportUnusedVariable = "warning",

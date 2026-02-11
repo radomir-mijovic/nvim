@@ -65,7 +65,18 @@ return {
       { "<leader>vs", "<cmd>VenvSelect<cr>", desc = "Select Python virtual environment" },
     },
     config = function()
-      require("venv-selector").setup()
+      require("venv-selector").setup({
+        -- Auto select venv when opening Python files
+        auto_refresh = true,
+        search_venv_managers = true,
+        search_workspace = true,
+        -- Common venv locations
+        search = true,
+        -- Notify when venv changes
+        notify_user_on_activate = true,
+        -- Enable pyright integration
+        dap_enabled = true,
+      })
     end,
   },
 
@@ -84,6 +95,32 @@ return {
 
       dapui.setup()
       dap_python.setup("python")
+
+      -- Django debugging configuration
+      table.insert(dap.configurations.python, {
+        type = "python",
+        request = "launch",
+        name = "Django",
+        program = "${workspaceFolder}/manage.py",
+        args = { "runserver", "--noreload" },
+        django = true,
+        console = "integratedTerminal",
+      })
+
+      -- FastAPI debugging configuration
+      table.insert(dap.configurations.python, {
+        type = "python",
+        request = "launch",
+        name = "FastAPI",
+        module = "uvicorn",
+        args = {
+          "main:app",
+          "--host", "0.0.0.0",
+          "--port", "8000",
+        },
+        console = "integratedTerminal",
+        jinja = true,
+      })
 
       -- Keymaps
       vim.keymap.set("n", "<leader>db", dap.toggle_breakpoint, { desc = "Toggle breakpoint" })
