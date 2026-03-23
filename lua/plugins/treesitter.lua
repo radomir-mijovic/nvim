@@ -18,7 +18,7 @@ return {
       highlight = {
         enable = true,
       },
-      indent = { enable = true },
+      indent = { enable = true, disable = { "python" } },
       autopairs = {
         enable = true,
       },
