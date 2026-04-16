@@ -1,6 +1,6 @@
 return {
   "HiPhish/rainbow-delimiters.nvim",
-  event = "VeryLazy",
+  event = "BufReadPost",
   config = function()
     -- Set nice, subtle rainbow colors
     vim.api.nvim_set_hl(0, "RainbowDelimiterRed", { fg = "#E06C75" })

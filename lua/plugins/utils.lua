@@ -184,6 +184,25 @@ return {
     end,
   },
 
+  -- Auto rename/close HTML tags
+  {
+    "windwp/nvim-ts-autotag",
+    event = { "BufReadPre", "BufNewFile" },
+    config = function()
+      require("nvim-ts-autotag").setup()
+    end,
+  },
+
+  -- Surround
+  {
+    "kylechui/nvim-surround",
+    version = "*",
+    event = "VeryLazy",
+    config = function()
+      require("nvim-surround").setup()
+    end,
+  },
+
   -- Comment
   {
     "numToStr/Comment.nvim",

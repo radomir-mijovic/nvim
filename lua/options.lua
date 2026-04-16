@@ -59,3 +59,6 @@ opt.fileencoding = "utf-8"
 -- Scroll
 opt.scrolloff = 8
 opt.sidescrolloff = 8
+
+-- Project-local config
+opt.exrc = true

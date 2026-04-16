@@ -121,8 +121,16 @@ return {
           filetypes = { "html", "css", "scss", "javascript", "javascriptreact", "typescript", "typescriptreact" },
         }
 
+        -- JavaScript/TypeScript
+        vim.lsp.config.ts_ls = {
+          cmd = { "typescript-language-server", "--stdio" },
+          filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+          root_markers = { "package.json", "tsconfig.json", ".git" },
+          capabilities = capabilities,
+        }
+
         -- Enable LSP servers
-        vim.lsp.enable({ "pyright", "html", "cssls", "emmet_ls" })
+        vim.lsp.enable({ "pyright", "html", "cssls", "emmet_ls", "ts_ls" })
       else
         -- Fallback to old lspconfig API
         local lspconfig = require("lspconfig")
@@ -161,6 +169,11 @@ return {
           capabilities = capabilities,
           on_attach = on_attach,
           filetypes = { "html", "css", "scss", "javascript", "javascriptreact", "typescript", "typescriptreact" },
+        })
+
+        lspconfig.ts_ls.setup({
+          capabilities = capabilities,
+          on_attach = on_attach,
         })
       end
 
@@ -202,6 +215,7 @@ return {
           "html",
           "cssls",
           "emmet_ls",
+          "ts_ls",
         },
         automatic_installation = true,
       })
