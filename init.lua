@@ -20,7 +20,10 @@ vim.g.maplocalleader = ","
 require("options")
 
 -- Load plugins
-require("lazy").setup("plugins", {
+require("lazy").setup({
+  { import = "plugins" },
+  { import = "plugins.themes" },
+}, {
   change_detection = {
     notify = false,
   },
