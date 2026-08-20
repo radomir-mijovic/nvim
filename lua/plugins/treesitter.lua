@@ -1,54 +1,39 @@
 return {
   "nvim-treesitter/nvim-treesitter",
-  branch = "master",
-  event = { "BufReadPre", "BufNewFile" },
+  branch = "main",
+  lazy = false,
   build = ":TSUpdate",
-  dependencies = {
-    "windwp/nvim-autopairs",
-  },
   config = function()
     -- Use HTML parser for htmldjango files
     vim.treesitter.language.register("html", "htmldjango")
+    -- Use TSX parser for JSX files (the javascript parser doesn't understand JSX)
+    vim.treesitter.language.register("tsx", "javascriptreact")
 
-    local status_ok, treesitter = pcall(require, "nvim-treesitter.configs")
-    if not status_ok then
-      return
-    end
+    require("nvim-treesitter").install({
+      "python",
+      "html",
+      "toml",
+      "css",
+      "javascript",
+      "typescript",
+      "tsx",
+      "jsdoc",
+      "json",
+      "yaml",
+      "markdown",
+      "markdown_inline",
+      "bash",
+      "lua",
+      "vim",
+      "dockerfile",
+      "gitignore",
+    })
 
-    treesitter.setup({
-      highlight = {
-        enable = true,
-      },
-      indent = { enable = true, disable = { "python" } },
-      autopairs = {
-        enable = true,
-      },
-      ensure_installed = {
-        "python",
-        "html",
-        "toml",
-        "css",
-        "javascript",
-        "typescript",
-        "json",
-        "yaml",
-        "markdown",
-        "markdown_inline",
-        "bash",
-        "lua",
-        "vim",
-        "dockerfile",
-        "gitignore",
-      },
-      incremental_selection = {
-        enable = true,
-        keymaps = {
-          init_selection = "<C-space>",
-          node_incremental = "<C-space>",
-          scope_incremental = false,
-          node_decremental = "<bs>",
-        },
-      },
+    -- Highlighting is started per-buffer via core Neovim (no-op if no parser)
+    vim.api.nvim_create_autocmd("FileType", {
+      callback = function(args)
+        pcall(vim.treesitter.start, args.buf)
+      end,
     })
   end,
 }

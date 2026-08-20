@@ -3,6 +3,7 @@ return {
   {
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
+    cmd = { "LspInfo", "LspRestart", "LspStart", "LspStop", "LspLog" },
     dependencies = {
       "hrsh7th/cmp-nvim-lsp",
       { "antosha417/nvim-lsp-file-operations", config = true },
@@ -24,6 +25,12 @@ return {
         keymap.set("n", "<leader>d", vim.diagnostic.open_float, { buffer = bufnr, desc = "Show diagnostics" })
         keymap.set("n", "[d", vim.diagnostic.goto_prev, { buffer = bufnr, desc = "Previous diagnostic" })
         keymap.set("n", "]d", vim.diagnostic.goto_next, { buffer = bufnr, desc = "Next diagnostic" })
+
+        -- Breadcrumbs (class > method) for lualine
+        if client.server_capabilities.documentSymbolProvider then
+          require("nvim-navic").attach(client, bufnr)
+        end
+
       end
 
       -- Enhanced capabilities
@@ -121,16 +128,19 @@ return {
           filetypes = { "html", "css", "scss", "javascript", "javascriptreact", "typescript", "typescriptreact" },
         }
 
-        -- JavaScript/TypeScript
-        vim.lsp.config.ts_ls = {
-          cmd = { "typescript-language-server", "--stdio" },
+        -- ESLint (LSP — provides code actions like "fix all" and "disable rule")
+        vim.lsp.config.eslint = {
+          cmd = { "vscode-eslint-language-server", "--stdio" },
           filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
-          root_markers = { "package.json", "tsconfig.json", ".git" },
+          root_markers = { ".eslintrc", ".eslintrc.js", ".eslintrc.cjs", ".eslintrc.json", "eslint.config.js", "eslint.config.mjs", "package.json", ".git" },
           capabilities = capabilities,
+          settings = {
+            workingDirectories = { mode = "auto" },
+          },
         }
 
-        -- Enable LSP servers
-        vim.lsp.enable({ "pyright", "html", "cssls", "emmet_ls", "ts_ls" })
+        -- Enable LSP servers (ts_ls is replaced by typescript-tools.nvim — configured separately)
+        vim.lsp.enable({ "pyright", "html", "cssls", "emmet_ls", "eslint" })
       else
         -- Fallback to old lspconfig API
         local lspconfig = require("lspconfig")
@@ -171,9 +181,10 @@ return {
           filetypes = { "html", "css", "scss", "javascript", "javascriptreact", "typescript", "typescriptreact" },
         })
 
-        lspconfig.ts_ls.setup({
+        lspconfig.eslint.setup({
           capabilities = capabilities,
           on_attach = on_attach,
+          filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
         })
       end
 
@@ -186,6 +197,41 @@ return {
           end
         end,
       })
+    end,
+  },
+
+  -- TypeScript / JavaScript / React LSP (replaces ts_ls — faster, more features)
+  {
+    "pmizio/typescript-tools.nvim",
+    event = { "BufReadPre", "BufNewFile" },
+    ft = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+    dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+    config = function()
+      require("typescript-tools").setup({
+        capabilities = require("cmp_nvim_lsp").default_capabilities(),
+        settings = {
+          tsserver_file_preferences = {
+            includeInlayParameterNameHints = "literals",
+            includeInlayFunctionParameterTypeHints = false,
+            includeInlayVariableTypeHints = false,
+            includeInlayPropertyDeclarationTypeHints = false,
+            includeInlayFunctionLikeReturnTypeHints = true,
+            includeInlayEnumMemberValueHints = true,
+            includeCompletionsForModuleExports = true,
+          },
+          tsserver_format_options = {
+            allowIncompleteCompletions = false,
+            allowRenameOfImportPath = false,
+          },
+          expose_as_code_action = "all",
+        },
+      })
+
+      -- Convenience keymaps for typescript-tools commands
+      vim.keymap.set("n", "<leader>co", "<cmd>TSToolsOrganizeImports<cr>", { desc = "Organize imports" })
+      vim.keymap.set("n", "<leader>cm", "<cmd>TSToolsAddMissingImports<cr>", { desc = "Add missing imports" })
+      vim.keymap.set("n", "<leader>cu", "<cmd>TSToolsRemoveUnused<cr>", { desc = "Remove unused" })
+      vim.keymap.set("n", "<leader>cf", "<cmd>TSToolsFixAll<cr>", { desc = "Fix all" })
     end,
   },
 
@@ -215,9 +261,33 @@ return {
           "html",
           "cssls",
           "emmet_ls",
-          "ts_ls",
+          "eslint",
         },
         automatic_installation = true,
+      })
+    end,
+  },
+
+  -- Mason tool installer (formatters, linters, debuggers — anything not an LSP server)
+  {
+    "WhoIsSethDaniel/mason-tool-installer.nvim",
+    dependencies = { "williamboman/mason.nvim" },
+    config = function()
+      require("mason-tool-installer").setup({
+        ensure_installed = {
+          -- JS / React
+          "prettier",
+          "eslint_d",
+          -- Python
+          "black",
+          "isort",
+          "ruff",
+          "debugpy",
+          -- Django templates
+          "djlint",
+        },
+        auto_update = false,
+        run_on_start = true,
       })
     end,
   },

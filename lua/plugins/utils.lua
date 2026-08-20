@@ -119,7 +119,7 @@ return {
   -- Fuzzy finder
   {
     "nvim-telescope/telescope.nvim",
-    branch = "0.1.x",
+    branch = "master",
     dependencies = {
       "nvim-lua/plenary.nvim",
       { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
@@ -131,7 +131,7 @@ return {
 
       telescope.setup({
         defaults = {
-          path_display = { "smart" },
+          path_display = { "filename_first" },
           mappings = {
             i = {
               ["<C-k>"] = actions.move_selection_previous,
@@ -152,6 +152,7 @@ return {
       keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Find files" })
       keymap.set("n", "<leader>fr", "<cmd>Telescope oldfiles<cr>", { desc = "Find recent files" })
       keymap.set("n", "<leader>fs", "<cmd>Telescope live_grep<cr>", { desc = "Find string in cwd" })
+      keymap.set("n", "<leader>f/", "<cmd>Telescope current_buffer_fuzzy_find<cr>", { desc = "Fuzzy search in current file" })
       keymap.set("n", "<leader>fc", "<cmd>Telescope grep_string<cr>", { desc = "Find string under cursor" })
       keymap.set("n", "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "Find buffers" })
 
@@ -237,7 +238,7 @@ return {
           end
 
           -- Navigation
-          map("n", "]c", function()
+          map("n", "]h", function()
             if vim.wo.diff then
               return "]c"
             end
@@ -247,7 +248,7 @@ return {
             return "<Ignore>"
           end, { expr = true, desc = "Next git change" })
 
-          map("n", "[c", function()
+          map("n", "[h", function()
             if vim.wo.diff then
               return "[c"
             end

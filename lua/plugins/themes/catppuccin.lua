@@ -20,6 +20,9 @@ return {
           ["@attribute"] = { fg = c.mauve },
           ["@variable.member"] = { fg = c.teal },
           ["@type"] = { fg = c.sky, style = { "bold" } },
+          IlluminatedWordText = { bg = "#373850" },
+          IlluminatedWordRead = { bg = "#373850" },
+          IlluminatedWordWrite = { bg = "#373850" },
         }
       end,
     })
