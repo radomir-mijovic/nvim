@@ -51,6 +51,24 @@ return {
         console = "integratedTerminal",
       })
 
+      -- Django projects keeping manage.py in example/ (e.g. django-debug-toolbar)
+      local django_example = {
+        type = "python",
+        request = "launch",
+        name = "Django Debug Toolbar",
+        program = "${workspaceFolder}/example/manage.py",
+        args = { "runserver", "--noreload" },
+        cwd = "${workspaceFolder}",
+        django = true,
+        console = "integratedTerminal",
+      }
+      table.insert(dap.configurations.python, django_example)
+
+      vim.api.nvim_create_user_command("DjangoExampleDebug", function()
+        dap.run(django_example)
+      end, { desc = "Debug example/manage.py runserver" })
+      vim.keymap.set("n", "<leader>dE", "<cmd>DjangoExampleDebug<cr>", { desc = "Debug Django example app" })
+
       -- FastAPI debugging configuration
       table.insert(dap.configurations.python, {
         type = "python",
